@@ -40,6 +40,12 @@ app.post("/webhook/orders_paid", (req, res) => {
         return res.status(400).send("Erro no JSON");
     }
 
+    // Verificar se o objeto 'order' e 'line_items' existem antes de acessar
+    if (!payload.order || !payload.order.line_items || payload.order.line_items.length === 0) {
+        console.error("❌ 'line_items' não encontrado no payload");
+        return res.status(400).send("'line_items' não encontrado no payload");
+    }
+
     // ✅ Alterar o nome do produto antes de processar
     const novoNomeProduto = "Edição Especial - " + payload.order.line_items[0].name;
 
