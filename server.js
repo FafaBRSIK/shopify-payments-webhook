@@ -54,6 +54,40 @@ app.post("/shopify-payment-webhook", (req, res) => {
     console.log("✅ Pedido atualizado antes do pagamento:", response);
     res.json(response);
 });
+const axios = require("axios");
+
+// Substitua com os seus dados
+const SHOPIFY_STORE = "yqqpuw-i1.myshopify.com"; // Exemplo: "minha-loja.myshopify.com"
+const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN; // Use a variável de ambiente
+const WEBHOOK_URL = "https://shopify-payments-webhook-production.up.railway.app/webhook/payment_sessions"; // URL do seu servidor
+
+async function registerWebhook() {
+    try {
+        const response = await axios.post(
+            `https://${SHOPIFY_STORE}/admin/api/2024-01/webhooks.json`,
+            {
+                webhook: {
+                    topic: "payment_sessions",
+                    address: WEBHOOK_URL,
+                    format: "json"
+                }
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN
+                }
+            }
+        );
+
+        console.log("✅ Webhook registrado com sucesso:", response.data);
+    } catch (error) {
+        console.error("❌ Erro ao registrar webhook:", error.response ? error.response.data : error.message);
+    }
+}
+
+// Chama a função para registrar o webhook ao iniciar o servidor
+registerWebhook();
 
 // Iniciar o servidor
 const PORT = process.env.PORT || 3000;
