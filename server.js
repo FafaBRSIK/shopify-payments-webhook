@@ -66,7 +66,7 @@ async function registerWebhook() {
             `https://${SHOPIFY_STORE}/admin/api/2023-10/webhooks.json`, // Atualize a versão da API conforme necessário
             {
                 webhook: {
-                    topic: "orders/paid", // Tópico válido
+                    topic: "orders/paid", // Tópico válido para pedidos pagos
                     address: WEBHOOK_URL,
                     format: "json"
                 }
