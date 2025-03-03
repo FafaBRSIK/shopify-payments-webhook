@@ -25,7 +25,7 @@ function verifyShopifySignature(req) {
 }
 
 // Rota para interceptar o Webhook de "orders/paid"
-app.post("/shopify-payment-webhook", (req, res) => {
+app.post("/webhook/orders_paid", (req, res) => {
     if (!verifyShopifySignature(req)) {
         console.error("❌ Assinatura do webhook inválida!");
         return res.status(400).send("Webhook error: assinatura inválida");
