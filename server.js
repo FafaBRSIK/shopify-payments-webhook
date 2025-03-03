@@ -5,10 +5,16 @@ const crypto = require("crypto");
 const axios = require("axios");
 
 const app = express();
+
+// Carregar variáveis de ambiente
 const SHOPIFY_SECRET = process.env.SHOPIFY_SECRET;
 const SHOPIFY_STORE = "yqqpuw-i1.myshopify.com"; // Substitua com o nome da sua loja
 const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN; // Use a variável de ambiente
 const WEBHOOK_URL = "https://shopify-payments-webhook-production.up.railway.app/webhook/orders_paid"; // URL do seu servidor
+
+// Verificar se as variáveis de ambiente estão carregando corretamente
+console.log("SHOPIFY_SECRET:", SHOPIFY_SECRET);
+console.log("SHOPIFY_ACCESS_TOKEN:", SHOPIFY_ACCESS_TOKEN);
 
 // Middleware para processar o corpo da requisição como raw
 app.use(bodyParser.raw({ type: "application/json" }));
@@ -17,15 +23,24 @@ app.use(bodyParser.raw({ type: "application/json" }));
 function verifyShopifySignature(req) {
     const hmacHeader = req.headers["x-shopify-hmac-sha256"];
     const body = req.body;
+
+    // Log de HMAC
+    console.log("hmacHeader:", hmacHeader);
+    
     const generatedHmac = crypto.createHmac("sha256", SHOPIFY_SECRET)
         .update(body, "utf8")
         .digest("base64");
+
+    console.log("generatedHmac:", generatedHmac);  // Log do HMAC gerado
 
     return hmacHeader === generatedHmac;
 }
 
 // Rota para interceptar o Webhook de "orders/paid"
 app.post("/webhook/orders_paid", (req, res) => {
+    // Log do corpo da requisição
+    console.log("Corpo da requisição recebido:", req.body.toString());
+
     if (!verifyShopifySignature(req)) {
         console.error("❌ Assinatura do webhook inválida!");
         return res.status(400).send("Webhook error: assinatura inválida");
